@@ -1,48 +1,41 @@
-# Preparatory work for master thesis
-This repository will store all the necessary code to reproduce the import/export for mobility data exchange standards
-into MobilityDB.
+This repository will store all the necessary code to import, export and use mobility data exchange standards with MobilityDB.
+
+This work is the result of the research for my master thesis that can be found [here](Master_thesis_Iliass_Public_Transports.pdf).
 
 ## Requirements
 
-* MobilityDB
-* Python >= 3.0
-* Protobuf Python version
+- MobilityDB 1.1
+- Other requirements depending on the standard
 
-## Raw data files
+## Public Transport Standards
 
-The files used in this tutorial are available on these links:
-* GTFS static STIB : https://transitfeeds.com/p/mta/86
-* GTFS static NY-LIRR : https://transitfeeds.com/p/mta/86
-* GTFS realtime NY-LIRR : https://transitfeeds.com/p/mta/421
-* NeTEx STIB : https://www.transportdata.be/fr/dataset/stib-mivb-netex/resource/4a733029-9ef9-4fd5-b3df-d4ab42ba1a9c
+A wide range of mobility standards exist, enabling the exchange of timetables and information on the topology of public transport networks.
+These include the well-known GTFS Static and Realtime, as well as more local standards such as NeTEx and SIRI in Europe.
 
-All the files are also directly available in the project, except for the NeTEx file, which is too large for being uploaded.
+This repository first explains how to import these types of data into MobilityDB (refer to the READMEs available in the corresponding folders). This is followed by a Use Cases section which shows what uses can be made of this data using MobilityDB.
 
-For this tutorial, we assume that all the content of this repository is extracted in <code>/tmp/Preparatory-work/</code>
-## GTFS Static
+## Use Cases
 
-To import GTFS static data, we only use SQL statements. This part is in three parts :
+The following are some examples of the Use Cases we have developed. More informations and details are provided in the master's thesis and in the [use cases' directory](Use%20Cases/). The visualisations are obtained using [MOVE](https://github.com/mschoema/move) but any other visualisation tool compatible with MobilityDB can be used. With MOVE, the moving objects are obtained with the following query :
 
-* Create the necessary tables to host the data by running <code>create_tables.sql</code>
-* Import the data with <code>import.sql</code>
-* Finally, we set up the geometries to visualize them with <code>set_up_geoms.sql</code>.
+```SQL
+SELECT trip FROM trips_mdb;
+```
+Conditions can be added to extract any specific data depending on your study.
 
-![image info](./GTFS-static/NY-LIRR/GTFS%20visualization.png)
+### Dynamic Visualisation of Delays by Line
+Using a dynamic visualisation tool for MobilityDB like MOVE on QGIS allows to watch the different public transports runs. The following visualisation shows the journey of a realtime catched train, and its theoretical trip extracted from the GTFS Static feed. In blue the theoretical train, and in red the train catched in realtime.
 
-## GTFS Real-time
+![](GTFS%20Realtime/img/new%20york%20lirr%20run.gif)
 
-To import GTFS-realtime raw data we have to generate the CSV file from the text file with the <code>generate_rt_csv.py</code> script.
+### Compute Static and Realtime Arrival and Departure Times
 
-Then to import into MobilityDB, we just have to follow the same steps as GTFS-static.
-The visualization for the vehicle positions should look like this.
+This query compute the arrival and departure times at each stop for a given trip. The potential delays can be therefore estimated.
 
-![image info](./GTFS-realtime/vehicle%20positions%20visualization.png)
+![](Use%20cases/img/arrival-departures.png)
 
-## NeTEx
+### Average Speed of Vehicles by Day or Hour
 
-A first step of preprocessing is necessary to convert the XML NeTEx file into a collection of CSV files by running 
-<code>generate_netex_csv.py</code>.
+This queries compute the average speed of our vehicles. Here average speed of New York buses.
 
-Then we create the tables, import the data and set up the geometries.
-
-![image info](NeTEx/NeTEx%20visualization.png)
+![](./Use%20cases/img/grafana%20avg%20speed%20buses.png)
